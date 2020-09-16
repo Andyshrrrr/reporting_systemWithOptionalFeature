@@ -29,7 +29,6 @@ import java.util.List;
  */
 @Service
 public class ExcelGenerationServiceImpl implements ExcelGenerationService {
-
     private void validateDate(ExcelData data) {
         if (data.getSheets().size() < 1) {
             throw new RuntimeException("Excel Data Error: no sheet is defined");
@@ -53,7 +52,6 @@ public class ExcelGenerationServiceImpl implements ExcelGenerationService {
     public File generateExcelReport(ExcelData data) throws IOException {
         validateDate(data);
         XSSFWorkbook workbook = new XSSFWorkbook();
-
         CellStyle headerStyle = workbook.createCellStyle();
         headerStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -62,11 +60,8 @@ public class ExcelGenerationServiceImpl implements ExcelGenerationService {
         font.setFontHeightInPoints((short) 16);
         font.setBold(true);
         headerStyle.setFont(font);
-
         CellStyle style = workbook.createCellStyle();
         style.setWrapText(true);
-
-
         for (ExcelDataSheet sheetData : data.getSheets()) {
             Sheet sheet = workbook.createSheet(sheetData.getTitle());
 
@@ -104,7 +99,7 @@ public class ExcelGenerationServiceImpl implements ExcelGenerationService {
 
         File currDir = new File(".");
         String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length() - 1) + "temp.xlsx";  // TODO : file name cannot be hardcoded here
+        String fileLocation = path.substring(0, path.length() - 1) + data.getTitle()+".xlsx";
 
         FileOutputStream outputStream = new FileOutputStream(fileLocation);
         workbook.write(outputStream);

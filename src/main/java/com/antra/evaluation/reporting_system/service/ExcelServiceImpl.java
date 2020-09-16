@@ -22,7 +22,8 @@ public class ExcelServiceImpl implements ExcelService {
 
         Optional<ExcelFile> fileInfo = excelRepository.getFileById(id);
        // if (fileInfo.isPresent()) {
-            File file = new File("temp.xlsx");
+            String path = id + ".xlsx";
+            File file = new File(path);
             try {
                 return new FileInputStream(file);
             } catch (FileNotFoundException e) {
