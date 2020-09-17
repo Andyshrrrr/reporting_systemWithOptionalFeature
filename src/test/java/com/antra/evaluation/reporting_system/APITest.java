@@ -1,8 +1,9 @@
 package com.antra.evaluation.reporting_system;
 
 import com.antra.evaluation.reporting_system.endpoint.ExcelGenerationController;
+import com.antra.evaluation.reporting_system.pojo.report.ExcelData;
+import com.antra.evaluation.reporting_system.pojo.report.ExcelDataSheet;
 import com.antra.evaluation.reporting_system.pojo.report.ExcelFile;
-import com.antra.evaluation.reporting_system.repo.ExcelRepositoryImpl;
 import com.antra.evaluation.reporting_system.service.ExcelService;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -14,9 +15,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.mockito.ArgumentMatchers.*;
@@ -50,8 +54,8 @@ public class APITest {
 
     @Test
     @Disabled
-    public void testExcelGeneration() throws FileNotFoundException, IOException {
-        //Mockito.when(excelService.CreateOneSheetExcel(any())).thenReturn(new ExcelFile());
+    public void testExcelGeneration() throws IOException {
+        Mockito.when(excelService.CreateOneSheetExcel(any())).thenReturn(new ExcelFile(new ExcelData("AAA", LocalDateTime.now(),new ArrayList<ExcelDataSheet>()), new File("AA"),"AAA", LocalDateTime.now(),12345));
         given().accept("application/json").contentType(ContentType.JSON).body("{\"headers\":[\"Name\",\"Age\"], \"data\":[[\"Teresa\",\"5\"],[\"Daniel\",\"1\"]]}").post("/excel").peek().
                 then().assertThat()
                 .statusCode(200)

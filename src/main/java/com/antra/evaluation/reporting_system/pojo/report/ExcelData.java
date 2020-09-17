@@ -8,6 +8,16 @@ public class ExcelData {
     private LocalDateTime generatedTime;
     private List<ExcelDataSheet> sheets;
 
+    //for mock test usage
+    public ExcelData(String title, LocalDateTime generatedTime, List<ExcelDataSheet> sheets) {
+        this.title = title;
+        this.generatedTime = generatedTime;
+        this.sheets = sheets;
+    }
+
+    public ExcelData() {
+    }
+
     public String getTitle() {
         return title;
     }

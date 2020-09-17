@@ -20,6 +20,18 @@ public class ExcelFile {
         fileSize = file.length();
     }
 
+    //for mock test usage,
+    public ExcelFile(ExcelData data, File file, String ID, LocalDateTime generateTime, long fileSize) {
+        this.data = data;
+        this.file = file;
+        this.ID = ID;
+        GenerateTime = generateTime;
+        this.fileSize = fileSize;
+    }
+
+    public ExcelFile() {
+    }
+
     public ExcelData getData() {
         return data;
     }
