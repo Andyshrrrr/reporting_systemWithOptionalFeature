@@ -49,5 +49,10 @@ public class ExcelRepositoryImpl implements ExcelRepository {
         }
         return files;
     }
+
+    @Override
+    public int getSize() {
+        return excelData.size();
+    }
 }
 
