@@ -35,7 +35,10 @@ public class ExcelRepositoryImpl implements ExcelRepository {
             return null;
         }
         excelData.remove(id);
-        file.getFile().delete();
+        if(!file.getFile().delete()) {
+            excelData.put(id, file);
+            throw new RuntimeException("file not deleted in the machine");
+        }
         return file;
     }
 
