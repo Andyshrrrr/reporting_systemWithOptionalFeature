@@ -1,11 +1,13 @@
 package com.antra.evaluation.reporting_system.endpoint;
 
+//import com.antra.evaluation.reporting_system.pojo.api.BatchRequest;
 import com.antra.evaluation.reporting_system.pojo.api.ExcelRequest;
 import com.antra.evaluation.reporting_system.pojo.api.ExcelResponse;
 import com.antra.evaluation.reporting_system.pojo.api.MultiSheetExcelRequest;
 import com.antra.evaluation.reporting_system.pojo.report.ExcelFile;
 import com.antra.evaluation.reporting_system.service.ExcelService;
 import io.swagger.annotations.ApiOperation;
+//import io.swagger.models.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ public class ExcelGenerationController {
         ExcelFile file = excelService.CreateOneSheetExcel(request);
         if(file ==  null) {
             log.error("createExcel() error: fail to save into repository");
-            throw new IOException("Fail to save into repository");
+            throw new RuntimeException("Fail to save into repository");
         }
         response.setFileId(file.getID());
         response.setGeneratedTime(file.getGenerateTime());
@@ -94,12 +96,8 @@ public class ExcelGenerationController {
     public void downloadExcel(@PathVariable String id, HttpServletResponse response) throws IOException {
         log.info("downloadExcel start");
         InputStream fis = excelService.getExcelBodyById(id);
-        //Optional<ExcelFile> file = repository.getFileById(id);
-        String nameOfFile = id+".xlsx";
-        String responseIn = "attachment; filename=\""+nameOfFile+"\"";
         response.setHeader("Content-Type","application/vnd.ms-excel");
         response.setHeader("Content-Disposition","attachment; filename=\"name_of_excel_file.xls\"");
-        response.setHeader("Content-Disposition",responseIn);
         FileCopyUtils.copy(fis, response.getOutputStream());
         log.info("downloadExcel end");
     }
@@ -120,6 +118,29 @@ public class ExcelGenerationController {
         log.info("deleteExcel end");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PostMapping("/excel/batch")
+    public ResponseEntity<List<ExcelResponse>> listExcelsBatch(@RequestBody @Validated List<ExcelRequest> requests) throws IOException {
+        log.info("ResponseEntity start");
+        var responses = new ArrayList<ExcelResponse>();
+        for( ExcelRequest request : requests) {
+            ExcelFile file = excelService.CreateOneSheetExcel(request);
+            ExcelResponse response = new ExcelResponse();
+            if(file == null) {
+                throw new IOException("Fail to create multiple file at a time");
+            }
+            log.info(file.getPathOfFile());
+            response.setDownloadLink(file.getPathOfFile());
+            response.setFileId(file.getID());
+            response.setGeneratedTime(file.getGenerateTime());
+            response.setFileSize(file.getFileSize());
+            responses.add(response);
+        }
+        log.info("End of Execution");
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
