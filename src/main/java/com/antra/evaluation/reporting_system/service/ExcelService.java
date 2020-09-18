@@ -4,6 +4,7 @@ import com.antra.evaluation.reporting_system.pojo.api.ExcelRequest;
 import com.antra.evaluation.reporting_system.pojo.api.MultiSheetExcelRequest;
 import com.antra.evaluation.reporting_system.pojo.report.ExcelFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -18,4 +19,6 @@ public interface ExcelService {
     List<ExcelFile> getAllInRepository();
 
     ExcelFile deleteByID(String id);
+
+    InputStream getBatchBodyById(List<String> id)throws IOException, FileNotFoundException;
 }

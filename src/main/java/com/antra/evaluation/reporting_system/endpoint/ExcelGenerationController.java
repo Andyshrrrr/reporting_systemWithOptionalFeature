@@ -18,9 +18,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.PathParam;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,10 +100,21 @@ public class ExcelGenerationController {
         log.info("downloadExcel start");
         InputStream fis = excelService.getExcelBodyById(id);
         response.setHeader("Content-Type","application/vnd.ms-excel");
-        response.setHeader("Content-Disposition","attachment; filename=\"name_of_excel_file.xls\"");
+        response.setHeader("Content-Disposition","attachment; filename=\"" + id + ".xls\"");
         FileCopyUtils.copy(fis, response.getOutputStream());
         log.info("downloadExcel end");
     }
+
+    @GetMapping("/excel/batch/content")
+    public void downLoadBatchExcel(@RequestParam List<String> id, HttpServletResponse response) throws IOException,NoSuchFieldException {
+        log.info("downLoadBatch start");
+        InputStream zis = excelService.getBatchBodyById(id);
+        FileCopyUtils.copy(zis, response.getOutputStream());
+        File f = new File("compresses.zip");
+        f.delete();
+        log.info("downloadExcel() end");
+    }
+
 
     @DeleteMapping("/excel/{id}")
     public ResponseEntity<ExcelResponse> deleteExcel(@PathVariable String id) {
@@ -129,7 +143,7 @@ public class ExcelGenerationController {
             if(file == null) {
                 throw new IOException("Fail to create multiple file at a time");
             }
-            log.info(file.getPathOfFile());
+            //log.info(file.getPathOfFile());
             response.setDownloadLink(file.getPathOfFile());
             response.setFileId(file.getID());
             response.setGeneratedTime(file.getGenerateTime());

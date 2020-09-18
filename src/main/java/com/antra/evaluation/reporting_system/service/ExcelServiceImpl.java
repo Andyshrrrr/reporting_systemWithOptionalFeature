@@ -18,6 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class ExcelServiceImpl implements ExcelService {
@@ -109,5 +112,29 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public ExcelFile deleteByID(String id) {
         return excelRepository.deleteFile(id);
+    }
+
+    @Override
+    public FileInputStream getBatchBodyById(List<String> id) throws IOException,FileNotFoundException{
+        System.out.println(id);
+        List<String> srcFiles = id.stream().filter(w->excelRepository.getFileById(w).isPresent()==true).map(w->{return (w + ".xlsx");}).collect(Collectors.toList());
+        System.out.println(srcFiles);
+        FileOutputStream fos = new FileOutputStream("compresses.zip");
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+        for(String file:srcFiles) {
+            File fileToZip = new File(file);
+            FileInputStream fis = new FileInputStream(file);
+            ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+            zipOut.putNextEntry(zipEntry);
+            byte[] bytes = new byte[1024];
+            int length;
+            while((length = fis.read(bytes)) >= 0) {
+                zipOut.write(bytes,0,length);
+            }
+            fis.close();
+        }
+        zipOut.close();
+        return new FileInputStream("compresses.zip");
+
     }
 }
