@@ -116,7 +116,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public FileInputStream getBatchBodyById(List<String> id) throws IOException,FileNotFoundException{
-        System.out.println(id);
+        //System.out.println(id);
         List<String> srcFiles = id.stream().filter(w->excelRepository.getFileById(w).isPresent()==true).map(w->{return (w + ".xlsx");}).collect(Collectors.toList());
         System.out.println(srcFiles);
         FileOutputStream fos = new FileOutputStream("compresses.zip");
